@@ -1,3 +1,7 @@
+## 这是我个人的学习笔记,如有问题,请批评指正,谢谢!
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
