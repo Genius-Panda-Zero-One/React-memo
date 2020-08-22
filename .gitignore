@@ -23,10 +23,11 @@ yarn-debug.log*
 yarn-error.log*
 
 # index的所有文件
-#  allIndexFiles
+  allIndexFiles
 
-# 样式文件
-css/
+#忽略
+ package.json
+  package-lock.json
 
-# 案例的数据
-feiyan.json
+
+

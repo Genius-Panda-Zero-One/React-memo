@@ -1,68 +1,109 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import "./css/03.css"
-
-// import './index.css';
-// import App from './App';
-// import * as serviceWorker from './serviceWorker';
+import ReactDOM, { render } from 'react-dom';
+import { createStore } from "redux";
+import { Provider, connect } from "react-redux"
 
 
-// 如何保证组件高性能的情况下 实现时间变化 
-class Clock extends React.Component {
-    constructor(props) {
-        // 继承父类的方法
-        super(props)
-        // 构造函数初始化数据,将需要改变的数据初始化到state中
-        this.state = {
-            time: new Date().toLocaleTimeString()
-        }
-        console.log(this.state.time);
-
-    }
+class Counter extends React.Component {
 
     render() {
-        //  this.state.time = new Date().toLocaleTimeString()
+        console.log(this.props);  // 里面就会有value 和 onClick
+        // 计数,通过store 的state传递给props 直接通过props就可以将state的数据获取
+        const value = this.props.value;
+        // 将修改数据的事件或者方法传入到props
+        const onAddClick = this.props.onAddClick;
+
         return (
             <div>
-                <h1>当前时间:{this.state.time}</h1>
+                <h1>计数的数: {value}</h1>
+                <button onClick={onAddClick}>数字+1</button>
+                <button onClick={this.props.onAddClick5}>数字+5</button>
             </div>
         )
     }
+}
+// 创建一个仓库
+const store = createStore(reducer)
 
-    // 为了让组件自己完成数据的更新 使用生命周期函数 组件渲染完成时的函数
-    componentDidMount() {
-        setInterval(() => {
-            // this.state.time = new Date().toLocaleTimeString() 虽然能达成效果,但是别用
-            //切勿直接修改state数据,直接state重新渲染内容,需要使用setState
-            // 通过this.setState修改完数据后,并不会立即修改DOM里面的内容
-            // react会在这个函数内容所有设置状态改变后,统一对比虚拟DOM对象
-            // 然后统一修改提升性能
-            this.setState({
-                time: new Date().toLocaleTimeString()
-            })
-        }, 1000);
+// 将state映射到props函数
+function mapStateToProps(state) {
+    //  console.log(state);  //输出0
+    return {
+        value: state.num
+    }
+}
+
+// 将修改state数据的方法 映射到props    参数默认传入store里的dispath方法
+
+function mapDispatchToProps(dispatch) {
+    // console.log(dispatch);
+    // dispatch 用于修改动作
+    return {
+        onAddClick: () => { dispatch(addAction) },
+        onAddClick5: () => { dispatch(onAddClick5) }
     }
 
 }
 
-// 这里并不能使用定时器,每个1s让页面重新渲染达到改变时间的目的
-// 因为Clock 是一个组件,当react去渲染用一个组件的时候,为了提高性能
-// 组件内部的数据没有变化
+// 将上面的2个方法,将数据仓库的state和修改state的方法映射到组件上 形成新的组件
+// 使用connect方法 将2个方法关联
+const App = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Counter)   // 调用 然后将Counter 传入进去成为一个新的组件
+// console.log(store)
+
+// 定义一个添加的动作
+const addAction = {
+    type: "add"
+}
+const onAddClick5 = {
+    type: "addNum",
+    num: 5
+}
+
+// 当我们的情况有很多种的时候
+
+let ActionFnObj = {
+    add: function (state, action) {
+        state.num++
+        return state
+    },
+    addNum: function (state, action) {
+        state.num = state.num + action.num
+        return state
+    }
+
+}
+
+
+
+function reducer(state = { num: 0 }, action) {
+    // console.log(action.num, state.num);
+    // 第一种写法
+    // switch (action.type) {
+    //     case "add":
+    //         state.num++
+    //         break;
+    //     default:
+    //         break
+    // }
+
+    // 第二种写法
+    // 在action 传入的时候判断 action.type是否是初始值 如果包含redux就是初始值
+    if (action.type.includes("redux")) {
+        return state
+    } else {
+        state = ActionFnObj[action.type](state, action)
+        // console.log(action.type); 输出就是type 例如 add
+        return { ...state }
+    }
+}
+
 ReactDOM.render(
-    <Clock />,
+    // 最大的根组件 Provider 用于传递store  Provider组件包起来可以实现数据共享
+    <Provider store={store}>
+        <App></App>
+    </Provider>,
     document.getElementById("root")
 )
-
-
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <App />
-//   </React.StrictMode>,
-//   document.getElementById('root')
-// );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-// serviceWorker.unregister();

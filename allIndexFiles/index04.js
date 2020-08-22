@@ -1,93 +1,67 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import "./css/03.css"
+// 将创建仓库的方法解构出来
+import Redux, { createStore } from "redux"
 
-// import './index.css';
-// import App from './App';
-// import * as serviceWorker from './serviceWorker';
+// 定义一个函数   默认值有有个state   第二个参数是action  通过不同的action 会返回不同的state
+const reducer = function (state = { num: 0 }, action) {
+    console.log(action);
 
-// 添加样式
-// let eleStyle = {
-//     background: "skyblue",
-//     borderBottom: "10px solid red"
-// }
-
-// let element = (
-//     <div>
-//         <h1 style={eleStyle}>添加样式</h1>
-//     </div>
-// )
-// ReactDOM.render(
-//     element,
-//     document.getElementById("root")
-// )
-
-// 添加样式 添加多个样式 可以采用数组的方式使用 join(" ") 拼接 class1 class2 的形式
-// let arrStr = ["abc1", "bgred"].join(" ")
-
-// let element = (
-//     <div>
-//         <h1 className={arrStr}>添加样式</h1>
-//     </div>
-// )
-// ReactDOM.render(
-//     element,
-//     document.getElementById("root")
-// )
-
-// 函数式组件 以及传递参数
-function Childcom(props) {
-    console.log(props);
-
-    let title = "今天是否出去"
-    let weather = props.weather
-    let goOut = weather == "下雨" ? "不出去" : "出去"
-    // 返回一个UI界面
-    return <div>
-        <h1>函数式组件</h1>
-        <h2>{title}</h2>
-        <span>{goOut}</span>
-    </div>
+    switch (action.type) {
+        case "add":
+            state.num++;
+            break;
+        case "decrement":
+            state.num--;
+            break
+        default:
+            break
+    }
+    return { ...state }
 }
 
-// 渲染
-// ReactDOM.render(
-//     // 使用组件的固定写法  传递的参数代码如下
-//     <Childcom weather="下雨" />,
-//     document.getElementById("root")
-// )
+// 创建一个仓库
+const store = createStore(reducer)
 
+function add() {
+    // 通过仓库的方法dispatch进行修改数据
+    // 里面的参数是action的type  通过type改变 仓库的数据
+    // dispatch会去调用reducer函数 并且将type参数传递到action中
+    // 同时 这里也可以传递多个数据 每个数据的属性都会成为action的属性
+    store.dispatch({ type: 'add', content: "你好" })
+}
 
-class HelloWorld extends React.Component {    //component 组件
-    render() {
-        console.log(this);
-        return (
-            <div>
-                <h1>类组件定义HelloWorld</h1>
-                <h2>hello我得到了:{this.props.kk}</h2>
-                {/* 参数一层层传递 */}
-                <Childcom weather={this.props.weather} />
-            </div>
-        )
-    }
+function decrement() {
+    // 通过仓库的方法dispatch进行修改数据
+    store.dispatch({ type: 'decrement' })
+
+}
+
+// 函数式计数器
+const Counter = function (props) {
+    //  console.log(store);
+    // console.log(store.getState()); //通过store.getState获取数据
+    let state = store.getState()
+    return (
+        <div>
+            <h1>计数数量:{state.num}</h1>
+            <button onClick={add}>计数+1</button>
+            <button onClick={decrement}>计数-1</button>
+        </div>
+    )
 }
 
 ReactDOM.render(
-    // 在helloworld组件中就可以看到props 属性里面有一个{kk:参数}
-    <HelloWorld kk="参数" wather="晴天" ></HelloWorld>,
+    <Counter></Counter>,
     document.getElementById("root")
 )
 
-
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <App />
-//   </React.StrictMode>,
-//   document.getElementById('root')
-// );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-// serviceWorker.unregister();
+// 使用store下面的 subscribe 订阅 DOM渲染事件  参数要求是函数
+store.subscribe(
+    () => {
+        ReactDOM.render(
+            <Counter></Counter>,
+            document.getElementById("root")
+        )
+    }
+)

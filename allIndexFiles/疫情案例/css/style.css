@@ -1,0 +1,92 @@
+html ,body{
+    overflow: hidden;
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.nav{
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+}
+.navitem{
+    width: 88px;
+    height: 44px;
+    text-align: center;
+    line-height: 44px;
+}
+.active {
+    font-weight: 900;
+}
+.nav .bar{
+    position: absolute;
+    bottom: 0px;
+    width: 44px;
+    height: 5px;
+    background-color: orangered;
+    transition: all 0.5s;
+}
+.content{
+    width: 1500px;
+    display: flex;
+    height: calc(100vh - 45px);
+    transition: .5s ease;
+}
+.contentItem{
+    width: 375px;
+}
+.new .banner img{
+    width: 100%;
+}
+.new .banner h1{
+    font-size: 20px;
+    padding: 0 20px;
+    line-height: 50px;
+    height: 50px;
+}
+.newContent {
+    height: 1100px;
+    display: flex;
+}
+
+.newContent .line{
+    width: 2px;
+    background-color: #ccc;
+    margin: 0 30px;
+}
+.newContent .newList{
+    flex: 1;
+}
+.newContent .newList .newsListItem{
+    position: relative;
+    background-color: #efefef;
+    border-radius: 10px;
+    margin: 10px 10px 10px 0;
+    padding: 10px;
+}
+.newContent .newList .newsListItem::before{
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-right: 10px solid #efefef;
+    top: 10px;
+    left: -20px;
+}
+
+.newContent .newList .newsListItem::after{
+    position: absolute;
+    content: "";
+    width: 10px;
+    height: 10px;
+    border: 4px solid red;
+    border-radius: 10px;
+    top: 10px;
+    left: -40px;
+}
+.newContent .newlist img{
+    width: 100%;
+}
